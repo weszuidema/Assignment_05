@@ -185,29 +185,38 @@ dif7 <- dif3 - dif1
 
 **J:** Explain in your own words what do all these differences represent.
 
+These differences are the coefficients for the interactions between the groups and logUNsun.
+
 **K:** Create a dataset with all these differences
+
+```{r}
+differences <- data.frame(dif1, dif2, dif3, dif4, dif5, dif6, dif7)
+differences
+```
+
 
 **L:** Create and print a table showing the `mod1` coefficients, standard errors, t-statistic and p.value for only the `Intercept` and the covariates: `logUnsun`, `avpctBCFEcat3`, and their interactions.
 
+```{r}
+library(texreg)
+htmlreg(list(mod1, mod2, mod3), file = "regtable.html")
+summary(mod3)
+```
+
+
 **M:** Compare the coefficients to the `differences` you previously calculated. Can you now interpret the coefficients?
 
-**N:** Keeping all the other covariates at their mean, use `mod3` to predict (+ 95% confidence interval) the following 300 scenarios. Hint: create a new dataset (`scenarios2`) containing the information of all these scenarios and use it for the `newdata` argument in the `predict()` function.
+```{r}
+summary(mod3)
+differences
+```
 
-| # | `logUNsun`     |     `avpctBCFEcat3` |
-|:----|:---------|:-------|
-| 1 |`min(logUNsun)`     | low |
-| ... | ...     | low |
-| 100 | `max(logUNsun)`     | low |
-| 101 |`min(logUNsun)`     | medium |
-| ... | ...     | medium |
-| 200 | `max(logUNsun)`     | medium |
-| 201 |`min(logUNsun)`     | high |
-| ... | ...     | high |
-| 300 | `max(logUNsun)`     | high |
 
-**O:** Plot the predicted values against the `logUNsun` values. You should plot 3 lines, one for each group of `avpctBCFEcat3` (low, medium, high). You should also include a 95% confidence interval around each line. Hint: You need to merge first the dataset `scenarios2` with the resulting dataset from the predictions.
-
-**P:** Explain in your own words what the plot is showing.
+The coefficient for logUNsun is equivalent to dif1, or the difference of moving between 0 and 1 for logUNsun for the "low" group.
+The coefficient for avpctBCFEcat3medium is equivalent to
+The coefficient for avpctBCFEcat3high is equivalent to
+The coefficient for logUNsun:avpctBCFEcat3medium is equivalent to
+The coefficient for logUNsun:avpctBCFEcat3high is equivalent to
 
 **N:** Keeping all the other covariates at their mean, use now `mod1` (where `avpctBCFE` is contious and not categorical) to predict (+ 95% confidence interval) the following 110 scenarios. Hint: create a new dataset (`scenarios3`) containing the information of all these scenarios and use it for the `newdata` argument in the `predict()` function.
 
@@ -223,4 +232,17 @@ dif7 <- dif3 - dif1
 | ... | ...     | `quantile(avpctBCFE, 1)` |
 | 210 | `max(logUNsun)`     | `quantile(avpctBCFE, 1)` |
 
+```{r}
+
+```
+
+
 **O:** Plot the predicted values against the `logUNsun` values. You should plot a different line for each different value of `avpctBCFE`. You don't need to include a 95% confidence interval around these lines. Hint: Although now we are using the continuous instead of the categorical representation of the variable `avpctBCFE`, to plot different lines according to different values of `avpctBCFE`, you will need to define the variable as a `factor()` in the ggplot's aesthetics.
+
+```{r}
+
+```
+
+
+**P:** Explain in your own words what the plot is showing.
+
