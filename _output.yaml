@@ -1,0 +1,8 @@
+html_document:
+  keep_md: true
+  self_contained: true
+  css: styles.css
+  number_sections: true
+  includes:
+    in_header: includes/in_header.html
+    before_body: includes/before_body.html
