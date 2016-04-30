@@ -137,7 +137,7 @@ mod1 <- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island +
 
 **P:** Explain in your own words what the plot is showing.
 
-**N:** Keeping all the other covariates at their mean, use now `mod1` (where `avpctBCFE` is contious and not categorical) to predict (+ 95% confidence interval) the following 110 scenarios. Hint: create a new dataset (`scenarios3`) containing the information of all these scenarios and use it for the `newdata` argument in the `predict()` function.
+**Q:** Keeping all the other covariates at their mean, use now `mod1` (where `avpctBCFE` is contious and not categorical) to predict (+ 95% confidence interval) the following 110 scenarios. Hint: create a new dataset (`scenarios3`) containing the information of all these scenarios and use it for the `newdata` argument in the `predict()` function.
 
 | # | `logUNsun`     |     `avpctBCFE` |
 |:----|:---------|:-------|
@@ -151,4 +151,4 @@ mod1 <- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island +
 | ... | ...     | `quantile(avpctBCFE, 1)` |
 | 210 | `max(logUNsun)`     | `quantile(avpctBCFE, 1)` |
 
-**O:** Plot the predicted values against the `logUNsun` values. You should plot a different line for each different value of `avpctBCFE`. You don't need to include a 95% confidence interval around these lines. Hint: Although now we are using the continuous instead of the categorical representation of the variable `avpctBCFE`, to plot different lines according to different values of `avpctBCFE`, you will need to define the variable as a `factor()` in the ggplot's aesthetics. 
+**R:** Plot the predicted values against the `logUNsun` values. You should plot a different line for each different value of `avpctBCFE`. You don't need to include a 95% confidence interval around these lines. Hint: Although now we are using the continuous instead of the categorical representation of the variable `avpctBCFE`, to plot different lines according to different values of `avpctBCFE`, you will need to define the variable as a `factor()` in the ggplot's aesthetics. 
