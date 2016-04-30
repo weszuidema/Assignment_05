@@ -1,9 +1,5 @@
----
-title: "Assignment 05"
-output:
-  html_document:
-    keep_md: true
----
+# Assignment 05
+
 ```{r}
 knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
 ```
