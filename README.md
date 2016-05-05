@@ -1,5 +1,7 @@
 # Assignment 05
 
+## Link to the assignment's [solutions](https://uw-pols503.github.io/Assignment_03/)
+
 ```{r}
 knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
 ```
