@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Solutions" />
+
+
+<title>Assignment 05</title>
+
+<script src="index_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="index_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="index_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="index_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="index_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="index_files/highlight/default.css"
+      type="text/css" />
+<script src="index_files/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="index_files/navigation-1.0/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+$$
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\mean}{mean}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Cor}{Cor}
+\DeclareMathOperator{\Bias}{Bias}
+\DeclareMathOperator{\MSE}{MSE}
+\DeclareMathOperator{\sd}{sd}
+\DeclareMathOperator{\se}{se}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\newcommand{\mat}[1]{\boldsymbol{#1}}
+\newcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\T}{'}
+
+\newcommand{\distr}[1]{\mathcal{#1}}
+\newcommand{\dnorm}{\distr{N}}
+\newcommand{\dmvnorm}[1]{\distr{N}_{#1}}
+$$
+
+<div class="fluid-row" id="header">
+
+
+<h1 class="title">Assignment 05</h1>
+<h4 class="author"><em>Solutions</em></h4>
+
+</div>
+
+
+<pre class="r"><code>knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)</code></pre>
+<div id="libraries-used" class="section level2">
+<h2><span class="header-section-number">0.1</span> Libraries Used</h2>
+<pre class="r"><code>library(&quot;pols503&quot;)
+library(&quot;rio&quot;)
+library(&quot;ggplot2&quot;)
+library(&quot;dplyr&quot;)
+library(&quot;broom&quot;)
+library(&quot;xtable&quot;)</code></pre>
+</div>
+<div id="data" class="section level2">
+<h2><span class="header-section-number">0.2</span> Data</h2>
+<pre class="r"><code>db &lt;- import(&quot;TradeConflict.dta&quot;)</code></pre>
+</div>
+<div id="model" class="section level2">
+<h2><span class="header-section-number">0.3</span> Model</h2>
+<p>This model is similar to their Model 1 in Table 1 (p. 676):</p>
+<pre class="r"><code>mod1 &lt;- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island + 
+              landratio + pciratio + jointdem + laglnrtrade +
+              lnrgdpab + lndist + logUNsun * avpctBCFE, 
+           data = db)</code></pre>
+</div>
+<div id="questions" class="section level2">
+<h2><span class="header-section-number">0.4</span> Questions</h2>
+<p><strong>A:</strong> Create a new variable <code>avpctBCFEcat3</code> by splitting the variable <code>avpctBCFE</code> into 3 categories.</p>
+<pre class="r"><code>db &lt;- mutate(db, avpctBCFEcat3 = cut(x = avpctBCFE, breaks = 3, 
+                                     labels = c(&quot;low&quot;, &quot;medium&quot;, &quot;high&quot;)))</code></pre>
+<p><strong>B:</strong> Run a new version of <code>mod1</code> (<code>mod2</code>) but in this case ignore the interaction effect between the variables <code>logUNsun</code> and <code>avpctBCFE</code>, and substitute the variable <code>avpctBCFE</code> for the new categorical you just created.</p>
+<pre class="r"><code>mod2 &lt;- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island + 
+              landratio + pciratio + jointdem + laglnrtrade +
+              lnrgdpab + lndist + logUNsun + avpctBCFEcat3, 
+           data = db)</code></pre>
+<p><strong>C:</strong> Plot the predicted values of the model <code>mod2</code> against the covariate <code>logUNsun</code>. Draw a linear regression line on it.</p>
+<pre class="r"><code>pred_mod2 &lt;- augment(mod2)
+ggplot(pred_mod2, aes(x = logUNsun, y = .fitted)) + 
+  stat_binhex() +
+  geom_smooth(method = &quot;lm&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" alt="" /></p>
+<p><strong>D:</strong> If you used <code>geom_point()</code> in the previous plot, you probably saw that there are a lot of data points. Replicate the same plot using <code>stat_binhex()</code> instead of <code>geom_point()</code>. You can find the documentation <a href="http://docs.ggplot2.org/0.9.3/stat_binhex.html">here</a>.</p>
+<p><strong>E:</strong> Take a look at the plot and at the coefficient for <code>logUNsun</code> in <code>mod2</code>. What can you say about the relationship betweeh this covariate and the outcome variable <code>lnrtrade</code>?</p>
+<p><strong>F:</strong> Replicate the same plot (<code>logUNsun</code> v. fitted values of <code>mod2</code>) but in this case use again <code>geom_point()</code> and color the dots differently depending on their values for <code>avpctBCFEcat3</code>. Make sure you also plot 3 different lines describing the relationship between <code>logUNsun</code> and the predicted values of <code>lnrtrade</code> for each group of <code>avpctBCFEcat3</code>. What do you see? How would you interpret this new plot?</p>
+<pre class="r"><code>ggplot(pred_mod2, aes(x = logUNsun, y = .fitted, fill = avpctBCFEcat3)) + 
+  stat_binhex(alpha = 0.6) +
+  geom_smooth(method = &quot;lm&quot;, aes(color = avpctBCFEcat3), lwd = 2, se = FALSE)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" alt="" /></p>
+<p><strong>G:</strong> Run a new model (<code>mod3</code>) similar to <code>mod2</code> but in this case interact the variables <code>logUNsun</code> and <code>avpctBCFEcat3</code>.</p>
+<pre class="r"><code>mod3 &lt;- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island + 
+              landratio + pciratio + jointdem + laglnrtrade +
+              lnrgdpab + lndist + logUNsun * avpctBCFEcat3, 
+           data = db)</code></pre>
+<p><strong>H:</strong> Keeping all the control variables at their means, calculate the predicted values for the following scenarios:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">#</th>
+<th align="left"><code>logUNsun</code></th>
+<th align="left"><code>avpctBCFEcat3</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">low</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">low</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">0</td>
+<td align="left">medium</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">1</td>
+<td align="left">medium</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="left">0</td>
+<td align="left">high</td>
+</tr>
+<tr class="even">
+<td align="left">6</td>
+<td align="left">1</td>
+<td align="left">high</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>controls &lt;- c(&quot;lnrpciab&quot;, &quot;avremote&quot;, &quot;landlocked&quot;, &quot;island&quot;, 
+              &quot;landratio&quot;, &quot;pciratio&quot;, &quot;jointdem&quot;, &quot;laglnrtrade&quot;,
+              &quot;lnrgdpab&quot;, &quot;lndist&quot;)
+scenarios &lt;- data.frame(logUNsun = rep(c(0,1), 3),
+                        avpctBCFEcat3 = c(rep(&quot;low&quot;, 2), rep(&quot;medium&quot;, 2),
+                                      rep(&quot;high&quot;, 2)))
+for (var in controls) {
+  scenarios[,var] &lt;- mean(db[,var], na.rm = TRUE)
+}
+pred_scenarios &lt;- predict(mod3, newdata = scenarios)</code></pre>
+<p><strong>I:</strong> Calculate the following:</p>
+<pre><code>- `dif1`: Difference between the predicted values of scenarios 2 and 1: (`logUNsun` == 1 &amp; `avpctBCFEcat3` == low) - (`logUNsun` == 0 &amp; `avpctBCFEcat3` == low).
+- `dif2`: Difference between the predicted values of scenarios 4 and 3: (`logUNsun` == 1 &amp; `avpctBCFEcat3` == medium) - (`logUNsun` == 0 &amp; `avpctBCFEcat3` == medium).
+- `dif3`: Difference between the predicted values of scenarios 6 and 5: (`logUNsun` == 1 &amp; `avpctBCFEcat3` == high) - (`logUNsun` == 0 &amp; `avpctBCFEcat3` == high).
+- `dif4`: Difference between the predicted values of scenarios 3 and 1: (`logUNsun` == 0 &amp; `avpctBCFEcat3` == medium) - (`logUNsun` == 0 &amp; `avpctBCFEcat3` == low).
+- `dif5`: Difference between the predicted values of scenarios 5 and 1: (`logUNsun` == 0 &amp; `avpctBCFEcat3` == high) - (`logUNsun` == 0 &amp; `avpctBCFEcat3` == low).
+- `dif6`: Difference between `dif2` and `dif1`.
+- `dif7`: Difference between `dif3` and `dif1`.</code></pre>
+<pre class="r"><code>dif1 &lt;- pred_scenarios[2] - pred_scenarios[1]
+dif2 &lt;- pred_scenarios[4] - pred_scenarios[3]
+dif3 &lt;- pred_scenarios[6] - pred_scenarios[5]
+dif4 &lt;- pred_scenarios[3] - pred_scenarios[1]
+dif5 &lt;- pred_scenarios[5] - pred_scenarios[1]
+dif6 &lt;- dif2 - dif1
+dif7 &lt;- dif3 - dif1</code></pre>
+<p><strong>J:</strong> Explain in your own words what do all these differences represent.</p>
+<ul>
+<li><code>dif1</code>: The slope of <code>lnrtrade ~ logUNsun</code> when we only consider dyads where <code>avpctBCFEcat3</code> == low.</li>
+<li><code>dif2</code>: The slope of <code>lnrtrade ~ logUNsun</code> when we only consider dyads where <code>avpctBCFEcat3</code> == medium.</li>
+<li><code>dif3</code>: The slope of <code>lnrtrade ~ logUNsun</code> when we only consider dyads where <code>avpctBCFEcat3</code> == high.</li>
+<li><code>dif4</code>: The difference in <code>lnrtrade</code> between dyads where <code>avpctBCFEcat3</code> is low and dyads where <code>avpctBCFEcat3</code> is high, when there is no conflicting interests between the countries (<code>logUNsun</code> == 0).</li>
+<li><code>dif5</code>: The difference in <code>lnrtrade</code> between dyads where <code>avpctBCFEcat3</code> is low and dyads where <code>avpctBCFEcat3</code> is high, when there is no conflicting interests between the countries (<code>logUNsun</code> == 0).</li>
+<li><code>dif6</code>: The difference between the slopes of <code>lntrade ~ logUnsun</code> when <code>avpctBCFEcat3</code> is medium and <code>avpctBCFEcat3</code> is low</li>
+<li><code>dif7</code>: The difference between the slopes of <code>lntrade ~ logUnsun</code> when <code>avpctBCFEcat3</code> is high and <code>avpctBCFEcat3</code> is low</li>
+</ul>
+<p><strong>K:</strong> Create a dataset (<code>differences</code>) with all these differences</p>
+<pre class="r"><code>differences &lt;- data.frame(dif1, dif2, dif3, 
+                          dif4, dif5, dif6, dif7)
+differences</code></pre>
+<pre><code>##        dif1        dif2       dif3       dif4        dif5       dif6
+## 2 0.6507081 -0.08007327 -0.3476271 0.04524175 -0.08913526 -0.7307814
+##         dif7
+## 2 -0.9983352</code></pre>
+<p><strong>L:</strong> Create and print a table showing the <code>mod1</code> coefficients, standard errors, t-statistic and p.value for only the <code>Intercept</code> and the covariates: <code>logUnsun</code>, <code>avpctBCFEcat3</code>, and their interactions.</p>
+<pre class="r"><code>regtab3 &lt;- tidy(mod3)
+regtab3 &lt;- regtab3[c(1,12:nrow(regtab3)),]
+regtab3</code></pre>
+<pre><code>##                            term    estimate  std.error   statistic
+## 1                   (Intercept) -4.35914077 0.24857807 -17.5363048
+## 12                     logUNsun  0.65070810 0.11036960   5.8957183
+## 13          avpctBCFEcat3medium  0.04524175 0.05091200   0.8886265
+## 14            avpctBCFEcat3high -0.08913526 0.06447025  -1.3825796
+## 15 logUNsun:avpctBCFEcat3medium -0.73078137 0.11457157  -6.3783834
+## 16   logUNsun:avpctBCFEcat3high -0.99833520 0.17212208  -5.8001576
+##         p.value
+## 1  1.118084e-68
+## 12 3.750183e-09
+## 13 3.742074e-01
+## 14 1.667989e-01
+## 15 1.802485e-10
+## 16 6.657977e-09</code></pre>
+<p><strong>M:</strong> Compare the coefficients to the <code>differences</code> you previously calculated. Can you now interpret the coefficients?</p>
+<p><strong>N:</strong> Keeping all the other covariates at their mean, use <code>mod3</code> to predict (+ 95% confidence interval) the following 300 scenarios. Hint: create a new dataset (<code>scenarios2</code>) containing the information of all these scenarios and use it for the <code>newdata</code> argument in the <code>predict()</code> function.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">#</th>
+<th align="left"><code>logUNsun</code></th>
+<th align="left"><code>avpctBCFEcat3</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left"><code>min(logUNsun)</code></td>
+<td align="left">low</td>
+</tr>
+<tr class="even">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left">low</td>
+</tr>
+<tr class="odd">
+<td align="left">100</td>
+<td align="left"><code>max(logUNsun)</code></td>
+<td align="left">low</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="left"><code>min(logUNsun)</code></td>
+<td align="left">medium</td>
+</tr>
+<tr class="odd">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left">medium</td>
+</tr>
+<tr class="even">
+<td align="left">200</td>
+<td align="left"><code>max(logUNsun)</code></td>
+<td align="left">medium</td>
+</tr>
+<tr class="odd">
+<td align="left">201</td>
+<td align="left"><code>min(logUNsun)</code></td>
+<td align="left">high</td>
+</tr>
+<tr class="even">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left">high</td>
+</tr>
+<tr class="odd">
+<td align="left">300</td>
+<td align="left"><code>max(logUNsun)</code></td>
+<td align="left">high</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>scenarios2 &lt;- data.frame(logUNsun = rep(seq(min(db$logUNsun, na.rm = TRUE),
+                                            max(db$logUNsun, na.rm = TRUE),
+                                            length.out = 100), 3),
+                        avpctBCFEcat3 = c(rep(&quot;low&quot;, 100), rep(&quot;medium&quot;, 100),
+                                      rep(&quot;high&quot;, 100)))
+for (var in controls) {
+  scenarios2[,var] &lt;- mean(db[,var], na.rm = TRUE)
+}
+pred_scenarios2 &lt;- predict(mod3, newdata = scenarios2, interval = &quot;confidence&quot;)</code></pre>
+<p><strong>O:</strong> Plot the predicted values against the <code>logUNsun</code> values. You should plot 3 lines, one for each group of <code>avpctBCFEcat3</code> (low, medium, high). You should also include a 95% confidence interval around each line. Hint: You need to merge first the dataset <code>scenarios2</code> with the resulting dataset from the predictions.</p>
+<pre class="r"><code>pred2_dataset &lt;- cbind(scenarios2, pred_scenarios2)
+ggplot(pred2_dataset, aes(x = logUNsun, y = fit, ymin = lwr, ymax = upr,
+                          fill = avpctBCFEcat3)) +
+  geom_line() +
+  geom_ribbon(alpha = 0.5)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" alt="" /></p>
+<p><strong>P:</strong> Explain in your own words what the plot is showing.</p>
+<p><strong>Q:</strong> Keeping all the other covariates at their mean, use now <code>mod1</code> (where <code>avpctBCFE</code> is contious and not categorical) to predict (+ 95% confidence interval) the following 110 scenarios. Hint: create a new dataset (<code>scenarios3</code>) containing the information of all these scenarios and use it for the <code>newdata</code> argument in the <code>predict()</code> function.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">#</th>
+<th align="left"><code>logUNsun</code></th>
+<th align="left"><code>avpctBCFE</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left"><code>min(logUNsun)</code></td>
+<td align="left"><code>quantile(avpctBCFE, 0.0)</code></td>
+</tr>
+<tr class="even">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left"><code>quantile(avpctBCFE, 0.0)</code></td>
+</tr>
+<tr class="odd">
+<td align="left">10</td>
+<td align="left"><code>max(logUNsun)</code></td>
+<td align="left"><code>quantile(avpctBCFE, 0.0)</code></td>
+</tr>
+<tr class="even">
+<td align="left">11</td>
+<td align="left"><code>min(logUNsun)</code></td>
+<td align="left"><code>quantile(avpctBCFE, 0.05)</code></td>
+</tr>
+<tr class="odd">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left"><code>quantile(avpctBCFE, 0.05)</code></td>
+</tr>
+<tr class="even">
+<td align="left">20</td>
+<td align="left"><code>max(logUNsun)</code></td>
+<td align="left"><code>quantile(avpctBCFE, 0.5)</code></td>
+</tr>
+<tr class="odd">
+<td align="left">201</td>
+<td align="left"><code>min(logUNsun)</code></td>
+<td align="left"><code>quantile(avpctBCFE, 1)</code></td>
+</tr>
+<tr class="even">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left"><code>quantile(avpctBCFE, 1)</code></td>
+</tr>
+<tr class="odd">
+<td align="left">210</td>
+<td align="left"><code>max(logUNsun)</code></td>
+<td align="left"><code>quantile(avpctBCFE, 1)</code></td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>scenarios3 &lt;- data.frame(logUNsun = rep(seq(min(db$logUNsun, na.rm = TRUE),
+                                            max(db$logUNsun, na.rm = TRUE),
+                                            length.out = 10), 21),
+                        avpctBCFE = as.vector(sapply(quantile(db$avpctBCFE, 
+                                                              seq(0, 1, 0.05)),
+                                                     function(x) rep(x, 10))))
+for (var in controls) {
+  scenarios3[,var] &lt;- mean(db[,var], na.rm = TRUE)
+}
+pred_scenarios3 &lt;- predict(mod1, newdata = scenarios3, interval = &quot;confidence&quot;)</code></pre>
+<p><strong>R:</strong> Plot the predicted values against the <code>logUNsun</code> values. You should plot a different line for each different value of <code>avpctBCFE</code>. You don’t need to include a 95% confidence interval around these lines. Hint: Although now we are using the continuous instead of the categorical representation of the variable <code>avpctBCFE</code>, to plot different lines according to different values of <code>avpctBCFE</code>, you will need to define the variable as a <code>factor()</code> in the ggplot’s aesthetics.</p>
+<pre class="r"><code>pred3_dataset &lt;- cbind(scenarios3, pred_scenarios3)
+ggplot(pred3_dataset, aes(x = logUNsun, y = fit, ymin = lwr, ymax = upr,
+                          fill = factor(avpctBCFE))) +
+  geom_line()</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" alt="" /></p>
+<hr />
+<p>As you can see, plotting multiple lines describing the effect of <em>conflicting interests</em> (<strong>logUNsun</strong>) on <em>trade</em> (<strong>lntrade</strong>) conditional on different <em>trade barriers</em> (<strong>avpctBCFE</strong>) is not very helpful. To observe that conditional effect, we often use <strong>marginal effects</strong> plots.</p>
+<p>Jeff Arnold has written a new <code>R</code> package to create marginal effects plots: <code>marfx</code>. Let’s use it in this example.</p>
+<p>Load the <code>devtools</code> package and us its <code>install_github()</code> function to install the <code>marfx</code> package from <code>GitHub</code>.</p>
+<pre class="r"><code>library(devtools)
+install_github(&quot;jrnold/marfx&quot;)</code></pre>
+<pre><code>## Skipping install for github remote, the SHA1 (6a3d16d7) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
+<pre class="r"><code>library(marfx)</code></pre>
+<p>Create a new set of hypothetical scenarios (<code>sim_scenarios</code>). In this case keep all the controls and the key covariate of interest <code>logUNsun</code> at their mean. Only the variable that conditions the effect of our key independent variable will change: <code>avpctBCFE</code>. You want this new hypothetical dataset to have 100 rows and the values for <code>avpctBCFE</code> to range from its minium to its maximum.</p>
+<pre class="r"><code>sim_scenarios &lt;- data.frame(logUNsun = mean(db$logUNsun, na.rm = TRUE),
+                            avpctBCFE = seq(min(db$avpctBCFE, na.rm = TRUE),
+                                           max(db$avpctBCFE, na.rm = TRUE),
+                                           length.out = 100))
+z &lt;- matrix(sapply(controls, function(x) rep(mean(db[,x], na.rm = TRUE), 100)),
+            nrow = 100)
+colnames(z) &lt;- controls
+sim_scenarios &lt;- cbind(sim_scenarios, z)</code></pre>
+<p>Use the <code>mfx()</code> function of the <code>marfx</code> package to calculate the coefficient of <code>logUNsun</code> and a confidence interval around it for each of the hypothetical scenarios.</p>
+<p>Give to the <code>mfx()</code> 3 parameters:</p>
+<ul>
+<li><code>x</code>: The regression/model object: e.g. <code>mod1</code></li>
+<li><code>data</code>: The dataset with hypothetical scenarios: e.g. <code>sim_scenarios</code></li>
+<li><code>variable</code>: The key covariate of interest: e.g. <code>logUNsun</code></li>
+</ul>
+<p>The function returns a dataset with the same number of rows than <code>sim_scenarios</code> and the following variables;</p>
+<ul>
+<li><code>estimate</code>: The effect (coefficient) of your key covariate on the outcome varaible</li>
+<li><code>std.error</code>: Standard error of the coefficient</li>
+<li><code>conf.low</code>: Lower bound of the confidence interval around the coefficient</li>
+<li><code>conf.high</code>: Upper bound of the confidence interval</li>
+</ul>
+<pre class="r"><code>sim_scenarios &lt;- cbind(sim_scenarios, mfx(mod1, data = sim_scenarios, &quot;logUNsun&quot;))</code></pre>
+<p>Plotting the marginal effect of <strong>conflicting interests</strong> on <strong>trade</strong>.</p>
+<pre class="r"><code>ggplot() +
+  geom_ribbon(data = sim_scenarios, mapping = aes(x = avpctBCFE, 
+                                          ymin = conf.low, 
+                                          ymax = conf.high),
+              alpha = 0.3) +
+  geom_line(data = sim_scenarios, mapping = aes(x = avpctBCFE, y = estimate)) +
+  geom_rug(data = db, mapping = aes(x = avpctBCFE)) +
+  geom_hline(yintercept = 0, color = &quot;gray&quot;) +
+  theme_minimal() +
+  theme(panel.grid = element_blank()) + 
+  scale_x_continuous(name = &quot;Trade Barriers (avpctBCFE)&quot;) +
+  scale_y_continuous(name = &quot;Marginal Effect of Conflicting Interests (longUNsun)&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" alt="" /></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

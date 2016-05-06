@@ -1,6 +1,8 @@
 # Assignment 05
 
-```r
+#### Link to the assignment's [solutions](https://uw-pols503.github.io/Assignment_05/)
+
+```{r}
 knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
 ```
 
@@ -19,8 +21,7 @@ To update your fork from the upstream repository:
 
 # Libraries used 
 
-
-```r
+```{r message=FALSE}
 library("pols503")
 library("rio")
 library("ggplot2")
@@ -28,8 +29,7 @@ library("dplyr")
 library("broom")
 ```
 If you do not have the **pols503** package installed, you can install it with,
-
-```r
+```{r eval=FALSE}
 library("devtools")
 install_github("UW-POLS503/r-pols503")
 ```
@@ -44,8 +44,7 @@ In this assignment we will use replication data for Kastner's (2007) ["When Do C
 
 Use the `import()` function of the `rio` package to import the STATA file `TradConflict.dta`. The file contains 74,415 rows and 43 columns/variables. Each row contains information about a country pair or dyad. The authors built the dataset using information from 76 countries from 1960 to 1992. 
 
-
-```r
+```{r}
 db <- import("TradeConflict.dta")
 ```
 
@@ -70,8 +69,7 @@ Independent Variables of interest:
 $Trade = \beta_{0} + \beta_{c}Conflict + \beta_{b} TradeBarriers + \beta_{cb}(Conflict \times TradeBarriers) + \beta Controls + \epsilon$ 
 
 This model is similar to their Model 1 in Table 1 (p. 676):
-
-```r
+```{r}
 mod1 <- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island + 
               landratio + pciratio + jointdem + laglnrtrade +
               lnrgdpab + lndist + logUNsun * avpctBCFE, 
@@ -88,15 +86,15 @@ mod1 <- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island +
 
 **D:** If you used `geom_point()` in the previous plot, you probably saw that there are a lot of data points. Replicate the same plot using `stat_binhex()` instead of `geom_point()`. You can find the documentation [here](http://docs.ggplot2.org/0.9.3/stat_binhex.html).
 
-**E:** Take a look at the plot and at the coefficient for `logUNsun` in `mod1b`. What can you say about the relationship betweeh this covariate and the outcome variable `lnrtrade`?
+**E:** Take a look at the plot and at the coefficient for `logUNsun` in `mod2`. What can you say about the relationship betweeh this covariate and the outcome variable `lnrtrade`?
 
-**F:** Replicate the same plot (`logUNsun` v. fitted values of `mod1b`) but in this case use again `geom_point()` and color the dots differently depending on their values for `avpctBCFEcat3`. Make sure you also plot 3 different lines describing the relationship between `logUNsun` and the predicted values of `lnrtrade` for each group of `avpctBCFEcat3`. What do you see? How would you interpret this new plot?
+**F:** Replicate the same plot (`logUNsun` v. fitted values of `mod2`) but in this case use again `geom_point()` and color the dots differently depending on their values for `avpctBCFEcat3`. Make sure you also plot 3 different lines describing the relationship between `logUNsun` and the predicted values of `lnrtrade` for each group of `avpctBCFEcat3`. What do you see? How would you interpret this new plot?
 
-**G:** Run a new model (`mod3`) similar to `mod2` but in this case interact the variables `logUNsun` and `avpctBCFE`.
+**G:** Run a new model (`mod3`) similar to `mod2` but in this case interact the variables `logUNsun` and `avpctBCFEcat3`.
 
 **H:** Keeping all the control variables at their means, calculate the predicted values for the following scenarios:
 
-| # | `logUNsun`     |     `avpctBCFE` |
+| # | `logUNsun`     |     `avpctBCFEcat3` |
 |:----|:---------|:-------|
 | 1 | 0     | low |
 | 2 | 1     | low |
@@ -107,11 +105,11 @@ mod1 <- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island +
 
 **I:** Calculate the following:
 
-    - `dif1`: Difference between the predicted values of scenarios 2 and 1: (`logUNsun` == 1 & `avpctBCFE` == low) - (`logUNsun` == 0 & `avpctBCFE` == low).
-    - `dif2`: Difference between the predicted values of scenarios 2 and 1: (`logUNsun` == 1 & `avpctBCFE` == medium) - (`logUNsun` == 0 & `avpctBCFE` == medium).
-    - `dif3`: Difference between the predicted values of scenarios 2 and 1: (`logUNsun` == 1 & `avpctBCFE` == high) - (`logUNsun` == 0 & `avpctBCFE` == high).
-    - `dif4`: Difference between the predicted values of scenarios 3 and 1: (`logUNsun` == 0 & `avpctBCFE` == medium) - (`logUNsun` == 0 & `avpctBCFE` == low).
-    - `dif5`: Difference between the predicted values of scenarios 5 and 1: (`logUNsun` == 0 & `avpctBCFE` == high) - (`logUNsun` == 0 & `avpctBCFE` == low).
+    - `dif1`: Difference between the predicted values of scenarios 2 and 1: (`logUNsun` == 1 & `avpctBCFEcat3` == low) - (`logUNsun` == 0 & `avpctBCFEcat3` == low).
+    - `dif2`: Difference between the predicted values of scenarios 4 and 3: (`logUNsun` == 1 & `avpctBCFEcat3` == medium) - (`logUNsun` == 0 & `avpctBCFEcat3` == medium).
+    - `dif3`: Difference between the predicted values of scenarios 6 and 5: (`logUNsun` == 1 & `avpctBCFEcat3` == high) - (`logUNsun` == 0 & `avpctBCFEcat3` == high).
+    - `dif4`: Difference between the predicted values of scenarios 3 and 1: (`logUNsun` == 0 & `avpctBCFEcat3` == medium) - (`logUNsun` == 0 & `avpctBCFEcat3` == low).
+    - `dif5`: Difference between the predicted values of scenarios 5 and 1: (`logUNsun` == 0 & `avpctBCFEcat3` == high) - (`logUNsun` == 0 & `avpctBCFEcat3` == low).
     - `dif6`: Difference between `dif2` and `dif1`.
     - `dif7`: Difference between `dif3` and `dif1`.
  
@@ -141,7 +139,7 @@ mod1 <- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island +
 
 **P:** Explain in your own words what the plot is showing.
 
-**N:** Keeping all the other covariates at their mean, use now `mod1` (where `avpctBCFE` is contious and not categorical) to predict (+ 95% confidence interval) the following 110 scenarios. Hint: create a new dataset (`scenarios3`) containing the information of all these scenarios and use it for the `newdata` argument in the `predict()` function.
+**Q:** Keeping all the other covariates at their mean, use now `mod1` (where `avpctBCFE` is contious and not categorical) to predict (+ 95% confidence interval) the following 110 scenarios. Hint: create a new dataset (`scenarios3`) containing the information of all these scenarios and use it for the `newdata` argument in the `predict()` function.
 
 | # | `logUNsun`     |     `avpctBCFE` |
 |:----|:---------|:-------|
@@ -155,4 +153,4 @@ mod1 <- lm(lnrtrade ~ lnrpciab + avremote + landlocked + island +
 | ... | ...     | `quantile(avpctBCFE, 1)` |
 | 210 | `max(logUNsun)`     | `quantile(avpctBCFE, 1)` |
 
-**O:** Plot the predicted values against the `logUNsun` values. You should plot a different line for each different value of `avpctBCFE`. You don't need to include a 95% confidence interval around these lines. Hint: Although now we are using the continuous instead of the categorical representation of the variable `avpctBCFE`, to plot different lines according to different values of `avpctBCFE`, you will need to define the variable as a `factor()` in the ggplot's aesthetics. 
+**R:** Plot the predicted values against the `logUNsun` values. You should plot a different line for each different value of `avpctBCFE`. You don't need to include a 95% confidence interval around these lines. Hint: Although now we are using the continuous instead of the categorical representation of the variable `avpctBCFE`, to plot different lines according to different values of `avpctBCFE`, you will need to define the variable as a `factor()` in the ggplot's aesthetics. 
